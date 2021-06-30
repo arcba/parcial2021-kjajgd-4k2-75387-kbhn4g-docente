@@ -1,0 +1,130 @@
+<h3>{{Titulo}} <small>{{TituloAccionABMC[AccionABMC]}}</small></h3>
+
+<!-- Formulario Filtro de búsqueda, se ve cuando la AccionABMC es "L"(busqueda/listado)-->
+<form name="FormBusqueda" [formGroup]="FormBusqueda" class="bg-light" *ngIf="AccionABMC == 'L'">
+  <!-- Botones -->
+  <div class="row justify-content-center">
+    <button type="button" class="btn btn-primary" (click)="Buscar();">
+      <span class="fas fa-search"> </span> Buscar
+    </button>
+    &nbsp;
+    <button type="button" class="btn btn-primary" (click)="Agregar()">
+      <span class="fas fa-plus"> </span>
+      Agregar
+    </button>
+  </div>
+</form>
+
+
+
+<!-- Tabla de resutados de busqueda y Paginador-->
+<div id="divTablaResultados" *ngIf="AccionABMC == 'L' &&  Items?.length > 0">
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th class="text-center">PoveedorId</th>
+        <th class="text-center">ProveedorRazonSocial</th>
+        <th class="text-center">ProveedorCodigo</th>
+        <th class="text-center">ProveedorFecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of Items">
+        <td>{{item.PoveedorId }}</td>
+        <td>{{item.ProveedorRazonSocial | uppercase }}</td>
+        <td>{{item.ProveedorCodigo }}</td>
+        <td>{{item.ProveedorFecha | date:'dd/MM/yyyy'}}</td>
+    </tbody>
+  </table>
+</div>
+
+<!--No se encontraron registros-->
+<div id="divMsjFormBusqueda" class="alert alert-info" *ngIf="AccionABMC == 'L' && Items?.length== 0">
+  <span class="fas fa-exclamation-sign"></span>{{Mensajes['SD']}}
+  <!-- texto: No se encontraron registros -->
+</div>
+
+
+<!-- Registro en Alta,Modificacion o Consulta -->
+<form name="FormRegistro" *ngIf="AccionABMC != 'L'" [formGroup]="FormRegistro">
+  <fieldset [disabled]="AccionABMC==='C'">
+    <!--campo ProveedorRazonSocial-->
+    <div class="form-group row">
+      <label class="col-form-label col-sm-2 offset-sm-2" for="ProveedorRazonSocial">
+          ProveedorRazonSocial <span class="text-danger">*</span>
+        </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control text-uppercase" formControlName="ProveedorRazonSocial" [ngClass]="{'is-invalid':(FormRegistro.controls.ProveedorRazonSocial.touched || submitted) && FormRegistro.controls.ProveedorRazonSocial.errors}" />
+        <span class="text-danger" *ngIf="(FormRegistro.controls.ProveedorRazonSocial.touched || submitted) && FormRegistro.controls.ProveedorRazonSocial.errors && FormRegistro.controls.ProveedorRazonSocial.errors.required ">
+            Dato requerido
+          </span>
+        <span class="text-danger" *ngIf="(FormRegistro.controls.ProveedorRazonSocial.touched || submitted) && (FormRegistro.controls.ProveedorRazonSocial.errors?.minlength || FormRegistro.controls.ProveedorRazonSocial.errors?.maxlength)">Dato texto de 5 a 55 caracteres</span>
+      </div>
+    </div>
+
+    <!--campo stock-->
+    <div class="form-group row">
+      <label class="col-form-label col-sm-2 offset-sm-2" for="ProveedorCodigo">
+        ProveedorCodigo <span class="text-danger">*</span>
+      </label>
+      <div class="col-sm-6">
+        <input
+          type="text"
+          name="ProveedorCodigo"
+          class="form-control"
+          formControlName="ProveedorCodigo"
+          [ngClass]="{'is-invalid': (FormRegistro.controls.ProveedorCodigo.touched || submitted)  && FormRegistro.controls.ProveedorCodigo.errors}"
+        />
+        <span class="text-danger" *ngIf="(FormRegistro.controls.ProveedorCodigo.touched || submitted) && FormRegistro.controls.ProveedorCodigo.errors && FormRegistro.controls.ProveedorCodigo.errors.required ">
+          Dato requerido
+        </span>
+        <span class="text-danger" *ngIf="(FormRegistro.controls.ProveedorCodigo.touched || submitted) && FormRegistro.controls.ProveedorCodigo.errors?.pattern">
+          Dato numérico, 1 a 13 dígitos.
+        </span>
+      </div>
+    </div>
+
+    <!--campo ProveedorFecha-->
+    <div class="form-group row">
+      <label class="col-form-label col-sm-2 offset-sm-2">
+    Proveedor Fecha <span class="text-danger">*</span>
+      </label>
+      <div class="col-sm-6">
+        <input
+          class="form-control"
+          name="ProveedorFecha"
+          formControlName="ProveedorFecha"
+          [ngClass]="{'is-invalid': (FormRegistro.controls.ProveedorFecha.touched || submitted)  && FormRegistro.controls.ProveedorFecha.errors}"
+        />
+        <span class="text-danger" *ngIf="(FormRegistro.controls.ProveedorFecha.touched || submitted) && FormRegistro.controls.ProveedorFecha.errors && FormRegistro.controls.ProveedorFecha.errors.required ">
+          Dato requerido
+        </span>
+        <span class="text-danger" *ngIf="(FormRegistro.controls.ProveedorFecha.touched || submitted) && FormRegistro.controls.ProveedorFecha.errors?.pattern">
+          Dato fecha, formato dd/mm/aaaa.
+        </span>
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- Botones Grabar, Cancelar/Volver' -->
+  <div class="row justify-content-center">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="Grabar()"
+      *ngIf=" AccionABMC == 'A'  || AccionABMC == 'M' "
+    >
+      <span class="fas fa-check"></span> Grabar
+    </button>
+    &nbsp;
+    <button type="button" class="btn btn-warning" (click)="Volver()">
+      <span class="fas fa-undo"></span>
+      {{AccionABMC == 'A' || AccionABMC == 'M' ? 'Cancelar' : 'Volver'}}
+    </button>
+  </div>
+
+  <!--texto: Revisar los datos ingresados...-->
+  <div id="divMsjFormRegistro" class="row alert alert-danger" *ngIf="submitted && FormRegistro.invalid">
+    <span class="fas fa-exclamation-sign"></span>{{Mensajes['RD']}}
+  </div>
+</form>
